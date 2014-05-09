@@ -1,0 +1,3 @@
+es\tena\foundation\persistence\SchemaUpdater.class
+es\tena\foundation\persistence\SchemaGenerator.class
+es\tena\foundation\persistence\HibernateUtil.class
