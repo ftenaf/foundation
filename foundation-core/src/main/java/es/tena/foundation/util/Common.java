@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Clase que contendra las utilerias generales que nos haran falta en proyectos
+ * Different utilities common to any project
  *
  * @author francisco.tena@gmail.com
  *

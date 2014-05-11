@@ -1,5 +1,7 @@
 package es.tena.foundation.util;
 
+import es.tena.foundation.util.filter.SQLFilter;
+import es.tena.foundation.util.filter.XLSFilter;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
