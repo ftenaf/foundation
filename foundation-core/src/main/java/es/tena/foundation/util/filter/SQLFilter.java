@@ -1,4 +1,4 @@
-package es.tena.foundation.util;
+package es.tena.foundation.util.filter;
 
 import java.io.File;
 import java.io.FileFilter;
