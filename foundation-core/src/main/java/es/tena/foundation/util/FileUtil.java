@@ -22,6 +22,10 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,6 +33,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.logging.Filter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -144,11 +149,12 @@ public final class FileUtil {
 
     /**
      * Save a collection of strings (meant for SQL scripts) to a file name
+     *
      * @param strs
      * @param filename
      * @param encoding
      * @throws FileNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
     public static void save2file(Collection<String> strs, String filename, String encoding) throws FileNotFoundException, IOException {
         String urlFile = filename;
@@ -174,11 +180,12 @@ public final class FileUtil {
 
     /**
      * Append the string to a file
+     *
      * @param str
      * @param filename
      * @param encoding
      * @throws FileNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
     public static void save2fileAppend(StringBuilder str, String filename, String encoding) throws FileNotFoundException, IOException {
         String urlFile = filename;
@@ -198,11 +205,12 @@ public final class FileUtil {
 
     /**
      * Save to a file the string supplied
+     *
      * @param str
      * @param filename
      * @param encoding
      * @throws FileNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
     public static void save2file(StringBuilder str, String filename, String encoding) throws FileNotFoundException, IOException {
         String urlFile = filename;
@@ -223,6 +231,7 @@ public final class FileUtil {
 
     /**
      * Save a inputStream into a file
+     *
      * @param is
      * @param filename
      * @param encoding
@@ -626,6 +635,7 @@ public final class FileUtil {
 
     /**
      * Gets a file name from a string file path
+     *
      * @param fileName The file name and path.
      * @return The file name.
      */
@@ -740,6 +750,7 @@ public final class FileUtil {
 
     /**
      * To use with POI. substitutes a template file with the tmpfile provided
+     *
      * @param zipfile the template file
      * @param tmpfile the XML file with the sheet data
      * @param entry the name of the sheet entry to substitute, e.g.
@@ -800,6 +811,20 @@ public final class FileUtil {
             }
         };
         return dir.listFiles(fileFilter);
+    }
+
+    /**
+     * Gets txt files in a folder
+     *
+     * @param folder
+     * @return
+     */
+    public static File[] getTXTFilesInFolder(String folder) {
+        File dir = new File(folder);
+        FileFilter fileFilter = new TXTFilter();
+        File[] files = dir.listFiles(fileFilter);
+        Arrays.sort(files, NameFileComparator.NAME_INSENSITIVE_COMPARATOR);
+        return files;
     }
 
     /**
@@ -905,4 +930,79 @@ public final class FileUtil {
         return fileNames;
     }
 
+    /**
+     * counts how many lines there are in a file
+     *
+     * @param filename
+     * @return
+     * @throws IOException
+     */
+    public static int countLines(File file) throws IOException {
+        try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
+            byte[] c = new byte[1024];
+            int count = 0;
+            int readChars = 0;
+            boolean empty = true;
+            while ((readChars = is.read(c)) != -1) {
+                empty = false;
+                for (int i = 0; i < readChars; ++i) {
+                    if (c[i] == '\n') {
+                        ++count;
+                    }
+                }
+            }
+            return (count == 0 && !empty) ? 1 : count;
+        }
+    }
+
+    /**
+     * counts how many lines there are in a file
+     *
+     * @param filename
+     * @return
+     * @throws IOException
+     */
+    public static int countLines(String filename) throws IOException {
+        try (InputStream is = new BufferedInputStream(new FileInputStream(filename))) {
+            byte[] c = new byte[1024];
+            int count = 0;
+            int readChars = 0;
+            boolean empty = true;
+            while ((readChars = is.read(c)) != -1) {
+                empty = false;
+                for (int i = 0; i < readChars; ++i) {
+                    if (c[i] == '\n') {
+                        ++count;
+                    }
+                }
+            }
+            return (count == 0 && !empty) ? 1 : count;
+        }
+    }
+
+    /**
+     * Gets all folders in a path
+     *
+     * @param path
+     * @return
+     */
+    public static List<File> getFolders(String path) {
+        File fname = new File(path);
+        List<File> folders = new ArrayList<>();
+        FileFilter directoryFilter = new FileFilter() {
+            public boolean accept(File file) {
+                return file.isDirectory();
+            }
+        };
+
+        File[] files = fname.listFiles(directoryFilter);
+        for (File file : files) {
+            if (file.isDirectory()) {
+                folders.addAll(Arrays.asList(file));
+            }
+
+        }
+        return folders;
+
+    }
 }

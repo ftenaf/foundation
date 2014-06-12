@@ -298,7 +298,7 @@ public class StringUtil {
      * @return
      * @throws IOException
      */
-    static public String inputStreamToString(InputStream is, String charset) throws IOException {
+    public static String inputStreamToString(InputStream is, String charset) throws IOException {
         StringBuilder stringBuffer = new StringBuilder();
         InputStreamReader inputStreamReader = charset == null ? new InputStreamReader(is) : new InputStreamReader(is, charset);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -599,7 +599,8 @@ public class StringUtil {
         List<String> list = new ArrayList<>();
         int pos = 0, end;
         while ((end = s.indexOf(delimiter, pos)) >= 0) {
-            list.add(s.substring(pos, end).trim().replace("'", "''"));
+            String r = s.substring(pos, end).trim().replace("'", "''");
+            if (!r.isEmpty()) list.add(r);
             pos = end + 1;
         }
         return list;
