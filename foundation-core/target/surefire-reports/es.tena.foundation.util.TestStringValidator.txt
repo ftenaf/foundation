@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: es.tena.foundation.util.TestStringValidator
--------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 8, Time elapsed: 0.003 sec
