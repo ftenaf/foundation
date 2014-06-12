@@ -3,10 +3,10 @@
     
     <modelVersion>4.0.0</modelVersion>
     <groupId>es.tena.foundation</groupId>
-    <artifactId>http</artifactId>
+    <artifactId>crypto</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>foundation-http</name>
+    <name>foundation-crypto</name>
     <url>http://maven.apache.org</url>
     
     <properties>
@@ -27,7 +27,7 @@
     </repositories>
     
     <build>
-        <finalName>foundation-http</finalName>
+        <finalName>foundation-crypto</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -58,31 +58,8 @@
             <groupId>es.tena.foundation</groupId>
             <artifactId>core</artifactId>
             <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.3.1</version>
-        </dependency>
-            
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.7</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>2.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.7.2</version>
-        </dependency>
-        
+        </dependency>	
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

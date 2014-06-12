@@ -1,10 +1,14 @@
 package es.tena.foundation.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Clase que contendra las utilerias generales que nos haran falta en proyectos
+ * Different utilities common to any project
  *
  * @author francisco.tena@gmail.com
  *
@@ -68,8 +72,9 @@ public final class Common {
 
     /**
      * Prints in the logger the string at the specified level
+     *
      * @param message
-     * @param level 
+     * @param level
      */
     public static void print(String message, int level) {
         int levelAux = level;
@@ -78,9 +83,33 @@ public final class Common {
         }
         Logger.getLogger(Common.class.getName()).log(Level.FINEST, null, message + "-" + levelAux);
     }
+    /**
+     * Gets the stack trace from a throwable
+     * @param th
+     * @return 
+     */
+    public static String getStackTraceFromThrowable(Throwable th) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(baos);
+        th.printStackTrace(pw);
+        pw.close();
+        return baos.toString();
+    }
     
     /**
-     * Prints the memory status 
+     * Show system properties in the 'out' console
+     */
+    public static void showProperties() {
+        Properties props = System.getProperties();
+        for (Iterator iter = props.keySet().iterator(); iter.hasNext();) {
+            String key = (String) iter.next();
+            String value = props.getProperty(key);
+            System.out.println(key + ": " + value);
+        }
+    }
+
+    /**
+     * Prints the memory status
      */
     public static void printSystemMem() {
         Runtime rt = Runtime.getRuntime();

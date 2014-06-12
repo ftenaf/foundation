@@ -1,15 +1,171 @@
 package es.tena.foundation.util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  *
  * @author Francisco Tena <francisco.tena@gmail.com>
  */
 public class HTTPUtil {
+
+    static long cont = 0;
+    static final String BOUNDARY_PREFIX = "----------------------------------";
+    
+    public static String getBoundary() {
+        return System.currentTimeMillis() + "x" + cont++;
+    }
+
+    public static String getBodyBoundaryString(String boundary) {
+        return BOUNDARY_PREFIX + boundary;
+    }
+
+    public static String getEndBodyBoundaryString(String boundary) {
+        return BOUNDARY_PREFIX + boundary + "--";
+    }
+
+    /**
+     * Gets a byte array with the content of a multipart form data simple parameter
+     * @param name
+     * @param value
+     * @param bodyBoundary
+     * @param charset
+     * @return 
+     */
+    public static byte[] getMultipartFormDataSimpleParameter(String name, String value, String bodyBoundary, String charset) {
+        String s = bodyBoundary;
+        s += "\r\n";
+        s += "Content-Disposition: form-data; name=\"" + name + "\"";
+        s += "\r\n\r\n";
+        s += value;
+        try {
+            return s.getBytes(charset);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Gets a byte array with the content of a multipart form binary data file
+     * @param name
+     * @param fileName
+     * @param value
+     * @param bodyBoundary
+     * @param charset
+     * @return 
+     */
+    public static byte[] getMultipartFormDataBinaryFileParameter(
+            String name, String fileName, byte[] value, String bodyBoundary, String charset) {
+        return getMultipartFormDataFileParameter(name, fileName, value, bodyBoundary, charset, false);
+    }
+
+    /**
+     * Gets a byte array with the content of a multipart form data text file
+     * @param name
+     * @param fileName
+     * @param value
+     * @param bodyBoundary
+     * @param charset
+     * @return 
+     */
+    public static byte[] getMultipartFormDataTextFileParameter(
+            String name, String fileName, byte[] value, String bodyBoundary, String charset) {
+        return getMultipartFormDataFileParameter(name, fileName, value, bodyBoundary, charset, true);
+    }
+
+    /**
+     * Gets a byte array with the content of a multipart form data file
+     * @param name
+     * @param fileName
+     * @param value
+     * @param bodyBoundary
+     * @param charset
+     * @param isTextFile
+     * @return 
+     */
+    public static byte[] getMultipartFormDataFileParameter(
+            String name, String fileName, byte[] value, String bodyBoundary, String charset, boolean isTextFile) {
+        String s = bodyBoundary;
+        s += "\r\n";
+        s += "Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + fileName + "\"";
+        s += "\r\n";
+        s += "Content-Type: " + (isTextFile ? "text/plain" : "application/octet-stream");
+        s += "\r\n\r\n";
+        s += value;
+        byte[] part1 = null;
+        try {
+            part1 = s.getBytes(charset);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] result = new byte[part1.length + value.length];
+        System.arraycopy(part1, 0, result, 0, part1.length);
+        System.arraycopy(value, 0, result, value.length, value.length);
+        return result;
+    }
+
+    /**
+     * Gets the parameters of a HttpServletRequest in a Map
+     * @param req
+     * @return a Map of String (parameter name) and Object (parameter value) 
+     * where Object can be a String, String[] or a org.apache.commons.fileupload.FileItem
+     */
+    static public Map<String, Object> getParamsMap(HttpServletRequest req) {
+        try {
+            Map<String, Object> r = new HashMap<>();
+            if (ServletFileUpload.isMultipartContent(req)) {
+                DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();
+                ServletFileUpload sfu = new ServletFileUpload(
+                        diskFileItemFactory);
+                List<FileItem> parameters = sfu.parseRequest(req);
+                for (FileItem fileItem : parameters) {
+                    if (fileItem.isFormField()) {
+                        Object prev = r.get(fileItem.getFieldName());
+                        Object o = null;
+                        if (prev != null) {
+                            String[] ss = null;
+                            if (prev instanceof String[]) {
+                                ss = new String[((String[]) prev).length + 1];
+                                System.arraycopy(prev, 0, ss, 0, ss.length - 1);
+                            } else {
+                                ss = new String[2];
+                                ss[0] = prev.toString();
+                            }
+                            ss[ss.length - 1] = fileItem.getString("utf-8");
+                            o = ss;
+                        } else {
+                            o = fileItem.getString("utf-8");
+                        }
+                        r.put(fileItem.getFieldName(), o);
+                    } else {
+                        r.put(fileItem.getFieldName(), fileItem);
+                    }
+                }
+            } else { 
+                Map<String, String[]> map = req.getParameterMap();
+                for (Map.Entry<String, String[]> entry : map.entrySet()) {
+                    String name = entry.getKey();
+                    String[] values = entry.getValue();
+                    r.put(name,
+                            values != null && values.length == 1 ? values[0]
+                            : values);
+                }
+            }
+            return r;
+        } catch (UnsupportedEncodingException | FileUploadException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Gets the parameter specified from the Request or returns it from the
