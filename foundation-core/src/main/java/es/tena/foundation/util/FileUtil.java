@@ -1,5 +1,6 @@
 package es.tena.foundation.util;
 
+import es.tena.foundation.util.filter.PDFFilter;
 import es.tena.foundation.util.filter.TXTFilter;
 import es.tena.foundation.util.filter.SQLFilter;
 import es.tena.foundation.util.filter.XLSFilter;
@@ -25,10 +26,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,7 +33,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.logging.Filter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -814,6 +810,21 @@ public final class FileUtil {
             }
         };
         return dir.listFiles(fileFilter);
+    }
+    
+    
+    /**
+     * Gets pdf files in a folder
+     *
+     * @param folder
+     * @return
+     */
+    public static File[] getPDFFilesInFolder(String folder) {
+        File dir = new File(folder);
+        FileFilter fileFilter = new PDFFilter();
+        File[] files = dir.listFiles(fileFilter);
+        Arrays.sort(files, NameFileComparator.NAME_INSENSITIVE_COMPARATOR);
+        return files;
     }
 
     /**
