@@ -603,6 +603,9 @@ public class StringUtil {
             if (!r.isEmpty()) list.add(r);
             pos = end + 1;
         }
+        list.add(s.substring(pos, s.length()).trim().replace("'", "''"));
+        
         return list;
     }
+    
 }

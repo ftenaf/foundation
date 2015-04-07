@@ -1,16 +1,20 @@
-package es.tena.foundation.util.filter;
+package es.tena.foundation.file.filter;
 
 import java.io.File;
 import java.io.FileFilter;
-
 /**
- *
- * @author ftena
+ * 
+ * @author Francisco Tena <francisco.tena@gmail.com>
  */
-public class TXTFilter implements FileFilter {
+public class File_Filter implements FileFilter {
 
-    private final String[] okFileExtensions = new String[]{"txt"};
+    private final String[] okFileExtensions;
 
+    public File_Filter(String[] fileExtensions) {
+        okFileExtensions = fileExtensions;
+    }
+   
+    
     @Override
     public boolean accept(File file) {
         if (!file.isDirectory()) {

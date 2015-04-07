@@ -1,9 +1,9 @@
-package es.tena.foundation.util;
+package es.tena.foundation.file;
 
-import es.tena.foundation.util.filter.PDFFilter;
-import es.tena.foundation.util.filter.TXTFilter;
-import es.tena.foundation.util.filter.SQLFilter;
-import es.tena.foundation.util.filter.XLSFilter;
+import es.tena.foundation.file.filter.PDFFilter;
+import es.tena.foundation.file.filter.TXTFilter;
+import es.tena.foundation.file.filter.SQLFilter;
+import es.tena.foundation.file.filter.XLSFilter;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -1017,6 +1017,33 @@ public final class FileUtil {
 
         }
         return folders;
-
     }
+    
+    /**
+     * Gets the files in a folder ordered by name ascendent
+     *
+     * @param folder
+     * @param fileFilter
+     * @return
+     */
+    public static File[] getFilesInFolderOrdered(String folder, FileFilter fileFilter) {
+        File dir = new File(folder);
+        File[] files = dir.listFiles(fileFilter);
+        Arrays.sort(files, NameFileComparator.NAME_INSENSITIVE_COMPARATOR);
+        return files;
+    }
+    
+    /**
+     * Gets the files in a folder 
+     *
+     * @param folder
+     * @param fileFilter
+     * @return
+     */
+    public static File[] getFilesInFolder(String folder, FileFilter fileFilter) {
+        File dir = new File(folder);
+        File[] files = dir.listFiles(fileFilter);
+        return files;
+    }
+    
 }

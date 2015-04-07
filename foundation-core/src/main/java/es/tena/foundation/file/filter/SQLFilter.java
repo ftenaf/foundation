@@ -1,4 +1,4 @@
-package es.tena.foundation.util.filter;
+package es.tena.foundation.file.filter;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -7,9 +7,9 @@ import java.io.FileFilter;
  *
  * @author ftena
  */
-public class PDFFilter implements FileFilter {
+public class SQLFilter implements FileFilter {
 
-    private final String[] okFileExtensions = new String[]{"pdf"};
+    private final String[] okFileExtensions = new String[]{"sql"};
 
     @Override
     public boolean accept(File file) {
