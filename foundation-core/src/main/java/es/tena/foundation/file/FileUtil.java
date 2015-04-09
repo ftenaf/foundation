@@ -225,6 +225,9 @@ public final class FileUtil {
             file.append(line2);
             file.append('\n');
         }
+        fis.close();
+        rd2.close();
+        fos.close();
         Logger.getLogger(FileUtil.class.getName()).log(Level.INFO, "Creado con exito {0}", filename);
     }
 
@@ -601,21 +604,23 @@ public final class FileUtil {
      * <tt>overwrite</tt> is set to false, or if moving file fails.
      */
     public static void move(File source, File destination, boolean overwrite) throws IOException {
-        if (destination.exists()) {
-            if (overwrite) {
-                destination.delete();
-            } else {
-                throw new IOException(
-                        "Moving file " + source.getPath() + " to " + destination.getPath() + " failed."
-                        + " The destination file already exists.");
+        if (source.isFile() && source.exists()){
+            if (destination.exists()) {
+                if (overwrite) {
+                    destination.delete();
+                } else {
+                    throw new IOException(
+                            "Moving file " + source.getPath() + " to " + destination.getPath() + " failed."
+                            + " The destination file already exists.");
+                }
             }
-        }
 
-        mkdirs(destination);
+            mkdirs(destination);
 
-        if (!source.renameTo(destination)) {
-            throw new IOException(
-                    "Moving file " + source.getPath() + " to " + destination.getPath() + " failed.");
+            if (!source.renameTo(destination)) {
+                throw new IOException(
+                        "Moving file " + source.getPath() + " to " + destination.getPath() + " failed.");
+            }
         }
     }
 
