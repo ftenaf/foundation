@@ -1,6 +1,7 @@
 package es.tena.foundation.util;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
 
 /**
  * @author francisco.tena@gmail.com
@@ -608,4 +610,50 @@ public class StringUtil {
         return list;
     }
     
+    
+    /**
+     * Splits a string by the delimiter provided in a more efficient memory way
+     * @param s string to be splitted by a delimiter
+     * @param delimiter used to separate tokens
+     * @param qualifier used in case a delimiter is used in a token
+     * @return List of Strings with all the tokens splitted
+     */
+    public static List<String> split(String s, char delimiter, char qualifier) {
+        List<String> list = new ArrayList<>();
+        String token = "";
+        boolean q = false;
+        int i = 0;
+        if (s.charAt(s.length()-1) != delimiter) s += delimiter;
+        while (i < s.length()-1){
+            char c = s.charAt(i);
+            //if it's the begining of the string or a qualifier is preceeded by the delimiter, begins the token
+            if ((isDelimiter(c, delimiter) || i == 0) && s.charAt(i+1) == qualifier){
+                if (!token.equals("")){
+                    list.add(token);
+                    token = "";
+                }
+                token += s.charAt(i+2);
+                i = i+3;
+                q = true;
+            }else if (q && c == qualifier && isDelimiter(s.charAt(i+1),delimiter)){
+                list.add(token);
+                token = "";
+                i = i+3;
+                q = false;
+            }else if (!q && c == delimiter){
+                list.add(token);
+                token = "";
+                i = i+1;
+            }else{
+                token += c;
+                i++;
+            }
+        }
+        
+        return list;
+    }
+    
+    private static boolean isDelimiter (char c, char delimiter){
+        return c == delimiter;
+    }
 }
