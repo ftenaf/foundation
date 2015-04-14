@@ -5,6 +5,7 @@
  */
 package es.tena.foundation.util;
 
+import es.tena.foundation.file.FileUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
