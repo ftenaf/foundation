@@ -1,12 +1,16 @@
 package es.tena.foundation.file.plain;
 
+import java.util.Locale;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 /**
  * Every "column" is represented by a field 
  * @author Francisco Tena <francisco.tena@gmail.com>
  */
 public class Field {
+    private static final Logger logger = Logger.getLogger(Field.class.getSimpleName());
+    
     String name;
     DataType type = DataType.ALPHANUMERIC;
     boolean included = true;
@@ -17,6 +21,7 @@ public class Field {
     String startChar;
     int startPosition;
     String value;
+    Locale locale;
     
     public Field(String name, DataType type) {
         this.name = name;
@@ -133,19 +138,30 @@ public class Field {
     public String getValue() {
         return value;
     }
+
+    /**
+     * gets the locale defined for this field, default US
+     * @return 
+     */
+    public Locale getLocale() {
+        return (locale == null? Locale.US:locale);
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+    
+    
     
     public String getValueFixed() {
         String valueFixed = value;
-        if (valueFixed.contains(",") && valueFixed.contains(".")){
-            valueFixed = valueFixed.replace(".", "");
-            valueFixed = valueFixed.replace(",", ".");
-        }else if (valueFixed.contains(",")) {
-            valueFixed = valueFixed.replace(",", ".");
+        if (getType().equals(DataType.CURRENCY)){
+//            try {
+//                valueFixed = NumberFormat.getNumberInstance(getLocale()).parse(value).toString();
+//            } catch (ParseException ex) {
+//                logger.log(Level.SEVERE, "Error al procesar el importe: " + value, ex);
+//            }
         }
-        valueFixed = valueFixed.replace(" ", "");
-        valueFixed = valueFixed.replaceAll("[a-zA-Z]", "");
-//        String valueFixed = value.replace(".", "");
-//        valueFixed = valueFixed.replace(",", ".");
         return valueFixed;
     }
 
@@ -170,10 +186,7 @@ public class Field {
             return false;
         }
         final Field other = (Field) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.name, other.name);
     }   
 
     @Override

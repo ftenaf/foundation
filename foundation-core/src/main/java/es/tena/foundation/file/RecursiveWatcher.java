@@ -134,7 +134,7 @@ public abstract class RecursiveWatcher {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                logger.log(Level.INFO, "File system actions (on watched folders) settled. Updating watches ...");
+                logger.log(Level.FINE, "File system actions (on watched folders) settled. Updating watches ...");
 //                watchEventsOccurred();
 //                fireListenerEvents();
             }
