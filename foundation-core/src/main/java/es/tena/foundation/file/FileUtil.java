@@ -174,7 +174,9 @@ public final class FileUtil {
             file.append('\n');
         }
         Logger.getLogger(FileUtil.class.getName()).log(Level.INFO, "Creado con exito: {0}", filename);
-
+        fos.close();
+        rd2.close();
+        fis.close();
     }
 
     /**
@@ -200,6 +202,9 @@ public final class FileUtil {
             file.append(line2);
             file.append('\n');
         }
+        fis.close();
+        rd2.close();
+        fos.close();
     }
 
     /**
@@ -520,19 +525,23 @@ public final class FileUtil {
      * @throws IOException If reading file fails.
      */
     public static List<String> readRecords(File file) throws IOException {
-        BufferedReader reader = (BufferedReader) readReader(file);
-        List<String> records = new ArrayList<>();
-        String record = null;
+        if (file.exists()){
+            BufferedReader reader = (BufferedReader) readReader(file);
+            List<String> records = new ArrayList<>();
+            String record = null;
 
-        try {
-            while ((record = reader.readLine()) != null) {
-                records.add(record);
+            try {
+                while ((record = reader.readLine()) != null) {
+                    records.add(record);
+                }
+            } finally {
+                close(reader, file);
             }
-        } finally {
-            close(reader, file);
-        }
 
-        return records;
+            return records;
+        }else {
+            return null;
+        }
     }
 
     /**
@@ -609,8 +618,7 @@ public final class FileUtil {
                 if (overwrite) {
                     destination.delete();
                 } else {
-                    throw new IOException(
-                            "Moving file " + source.getPath() + " to " + destination.getPath() + " failed."
+                    throw new IOException("Moving file " + source.getPath() + " to " + destination.getPath() + " failed."
                             + " The destination file already exists.");
                 }
             }
@@ -618,8 +626,17 @@ public final class FileUtil {
             mkdirs(destination);
 
             if (!source.renameTo(destination)) {
-                throw new IOException(
-                        "Moving file " + source.getPath() + " to " + destination.getPath() + " failed.");
+                SecurityManager security = System.getSecurityManager();
+                if (security != null) {
+                    try{
+                        security.checkWrite(destination.getPath());
+                    }catch(SecurityException ex){
+                        throw new IOException("Moving file " + source.getPath() + " to " + destination.getPath() + " failed. Check WRITE permissions");
+                    }
+                    throw new IOException("Moving file " + source.getPath() + " to " + destination.getPath() + " failed. Check permissions");
+                }else{
+                    throw new IOException("Moving file " + source.getPath() + " to " + destination.getPath() + " failed. ");
+                }
             }
         }
     }

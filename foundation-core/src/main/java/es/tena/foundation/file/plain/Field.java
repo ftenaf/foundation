@@ -156,6 +156,7 @@ public class Field {
     public String getValueFixed() {
         String valueFixed = value;
         if (getType().equals(DataType.CURRENCY)){
+            valueFixed = value.replaceAll(" ", "");
 //            try {
 //                valueFixed = NumberFormat.getNumberInstance(getLocale()).parse(value).toString();
 //            } catch (ParseException ex) {
